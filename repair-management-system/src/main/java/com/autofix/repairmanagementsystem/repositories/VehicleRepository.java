@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface VehicleRepository extends JpaRepository<VehicleEntity, Long> {
@@ -25,4 +26,7 @@ public interface VehicleRepository extends JpaRepository<VehicleEntity, Long> {
     // Contar vehículos por tipo
     @Query(value = "SELECT v.type, COUNT(v) FROM VehicleEntity v GROUP BY v.type", nativeQuery = true)
     List<Object[]> countVehiclesByType();
+
+    // Buscar vehículos por número de placa
+    Optional<VehicleEntity> findByLicensePlateNumber(String licensePlateNumber);
 }

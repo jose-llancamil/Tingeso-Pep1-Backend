@@ -4,6 +4,7 @@ import com.autofix.repairmanagementsystem.dto.RepairTypeAverageCostDto;
 import com.autofix.repairmanagementsystem.entities.RepairTypeEntity;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 
@@ -19,4 +20,7 @@ public interface RepairTypeRepository extends JpaRepository<RepairTypeEntity, Lo
     // Obtener los costos base promedio de todos los tipos de reparación
     @Query("SELECT new com.autofix.repairmanagementsystem.dto.RepairTypeAverageCostDto(rt.description, (rt.baseCostGasoline + rt.baseCostDiesel + rt.baseCostHybrid + rt.baseCostElectric) / 4.0) FROM RepairTypeEntity rt")
     List<RepairTypeAverageCostDto> findAverageBaseCosts();
+
+    @Query("SELECT COUNT(r) FROM RepairEntity r WHERE r.repairType.repairTypeId = :repairTypeId")
+    long countByRepairTypeId(@Param("repairTypeId") Long repairTypeId);
 }
