@@ -45,12 +45,6 @@ public class VehicleService {
         return vehicleRepository.findById(vehicleId).orElseThrow(() -> new Exception("Vehículo no encontrado con ID: " + vehicleId));
     }
 
-//    public List<VehicleEntity> findVehiclesByCriteria(String brand, String engineType, Integer manufactureYear) {
-//        // Implementar lógica para buscar vehículos por diversos criterios
-//        // Esto es un ejemplo, necesitarías ajustar el repositorio para soportar esta consulta
-//        return vehicleRepository.findVehiclesByCriteria(brand, engineType, manufactureYear);
-//    }
-
     @Transactional
     public void deleteVehicle(Long vehicleId) throws Exception {
         // Verificar si hay reparaciones pendientes o historial importante

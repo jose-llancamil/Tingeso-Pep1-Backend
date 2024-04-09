@@ -10,7 +10,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
+import java.time.DayOfWeek;
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -76,5 +79,25 @@ public class RepairService {
         RepairEntity repair = repairRepository.findById(repairId)
                 .orElseThrow(() -> new Exception("Reparación no encontrada con ID: " + repairId));
         repairRepository.deleteById(repairId);
+    }
+
+    public BigDecimal calculateDayOfWeekDiscount(LocalDate entryDate, LocalTime entryTime) {
+        DayOfWeek dayOfWeek = entryDate.getDayOfWeek();
+        BigDecimal discountPercentage = BigDecimal.ZERO;
+
+        // Verifica si es lunes o jueves
+        boolean isDiscountDay = dayOfWeek == DayOfWeek.MONDAY || dayOfWeek == DayOfWeek.THURSDAY;
+
+        // Verifica si la hora está entre las 09:00 y las 12:00
+        LocalTime startTime = LocalTime.of(9, 0);
+        LocalTime endTime = LocalTime.of(12, 0);
+        boolean isInTimeRange = !entryTime.isBefore(startTime) && entryTime.isBefore(endTime);
+
+        // Si cumple ambos criterios, se aplica un descuento del 10%
+        if (isDiscountDay && isInTimeRange) {
+            discountPercentage = new BigDecimal("10");
+        }
+
+        return discountPercentage;
     }
 }

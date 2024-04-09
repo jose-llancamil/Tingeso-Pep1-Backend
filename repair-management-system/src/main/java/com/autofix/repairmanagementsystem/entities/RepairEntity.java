@@ -1,9 +1,9 @@
 package com.autofix.repairmanagementsystem.entities;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
@@ -16,7 +16,6 @@ import java.time.LocalTime;
 public class RepairEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "repair_id", unique = true, nullable = false)
     private Long repairId;
 
     @ManyToOne(fetch = FetchType.LAZY)

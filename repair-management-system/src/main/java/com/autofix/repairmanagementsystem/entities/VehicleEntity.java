@@ -14,7 +14,6 @@ import java.util.List;
 public class VehicleEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "vehicle_id", unique = true, nullable = false)
     private Long vehicleId;
 
     @Column(name = "license_plate_number", nullable = false, unique = true)
@@ -40,4 +39,7 @@ public class VehicleEntity {
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     private List<RepairEntity> repairs;
+
+    @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<BonusEntity> bonuses;
 }

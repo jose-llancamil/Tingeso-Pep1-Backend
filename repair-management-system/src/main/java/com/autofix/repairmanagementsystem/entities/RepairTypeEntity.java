@@ -1,9 +1,9 @@
 package com.autofix.repairmanagementsystem.entities;
 
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import jakarta.persistence.*;
 import java.math.BigDecimal;
 
 @Entity
@@ -14,7 +14,6 @@ import java.math.BigDecimal;
 public class RepairTypeEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "repair_type_id", unique = true, nullable = false)
     private Long repairTypeId;
 
     @Column(nullable = false)
@@ -32,4 +31,3 @@ public class RepairTypeEntity {
     @Column(name = "base_cost_electric", nullable = false)
     private BigDecimal baseCostElectric;
 }
-
