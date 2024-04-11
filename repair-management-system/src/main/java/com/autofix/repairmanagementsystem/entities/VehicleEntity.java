@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import java.util.List;
 
 @Entity
@@ -33,6 +34,9 @@ public class VehicleEntity {
 
     @Column(name = "engine_type", nullable = false)
     private String engineType;
+
+    @Column(nullable = false)
+    private Integer mileage;
 
     @Column(name = "seat_count", nullable = false)
     private Integer seatCount;

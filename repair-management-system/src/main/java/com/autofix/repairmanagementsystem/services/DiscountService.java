@@ -62,7 +62,6 @@ public class DiscountService {
 
         BigDecimal discountPercentage = BigDecimal.ZERO;
 
-        // Asignar porcentajes basados en la tabla de tu enunciado y el tipo de motor
         if (engineType.equalsIgnoreCase("GASOLINE")) {
             if (repairCount >= 1 && repairCount <= 2) {
                 discountPercentage = new BigDecimal("5");
@@ -107,5 +106,6 @@ public class DiscountService {
 
         return discountPercentage;
     }
+
 
 }

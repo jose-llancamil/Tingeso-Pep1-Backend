@@ -14,6 +14,7 @@ import java.math.BigDecimal;
 import java.time.DayOfWeek;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 import java.util.Optional;
 
@@ -99,5 +100,28 @@ public class RepairService {
         }
 
         return discountPercentage;
+    }
+
+    public BigDecimal calculatePickupDelayCharge(Long repairId) {
+        RepairEntity repair = repairRepository.findById(repairId)
+                .orElseThrow(() -> new RuntimeException("Reparación no encontrada con ID: " + repairId));
+
+        LocalDate readyDate = repair.getExitDate(); // Suponiendo que `exitDate` es cuando el vehículo está listo para ser recogido
+        LocalDate pickupDate = repair.getCustomerPickupDate();
+
+        // Calcula el número de días de retraso
+        long daysDelayed = ChronoUnit.DAYS.between(readyDate, pickupDate);
+
+        if (daysDelayed <= 0) {
+            // No hay retraso
+            return BigDecimal.ZERO;
+        } else {
+            // Recargo del 5% por cada día de retraso
+            BigDecimal totalRepairCost = repair.getRepairCost(); // Asumiendo que `repairCost` es el costo total de la reparación antes de aplicar cualquier recargo
+            BigDecimal dailyDelayChargePercentage = new BigDecimal("0.05"); // 5%
+            BigDecimal delayCharge = totalRepairCost.multiply(dailyDelayChargePercentage).multiply(new BigDecimal(daysDelayed));
+
+            return delayCharge;
+        }
     }
 }
