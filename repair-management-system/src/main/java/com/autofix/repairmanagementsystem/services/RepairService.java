@@ -24,35 +24,44 @@ public class RepairService {
     private final RepairRepository repairRepository;
     private final VehicleRepository vehicleRepository;
     private final RepairTypeRepository repairTypeRepository;
+    private final DiscountService discountService;
+    private final ChargeService chargeService;
+    private final BonusService bonusService;
 
     @Autowired
-    public RepairService(RepairRepository repairRepository, VehicleRepository vehicleRepository, RepairTypeRepository repairTypeRepository) {
+    public RepairService(RepairRepository repairRepository, VehicleRepository vehicleRepository,
+                         RepairTypeRepository repairTypeRepository, DiscountService discountService,
+                         ChargeService chargeService, BonusService bonusService) {
         this.repairRepository = repairRepository;
         this.vehicleRepository = vehicleRepository;
         this.repairTypeRepository = repairTypeRepository;
+        this.discountService = discountService;
+        this.chargeService = chargeService;
+        this.bonusService = bonusService;
     }
 
     @Transactional
     public RepairEntity registerRepair(RepairEntity repair) throws Exception {
-        // Validación de la existencia del vehículo asociado
+        // Validar la existencia del vehículo asociado y el tipo de reparación, así como la coherencia de las fechas.
+        validateRepair(repair);
+
+        // Guardar la información de la reparación en la base de datos.
+        return repairRepository.save(repair);
+    }
+
+    private void validateRepair(RepairEntity repair) throws Exception {
         VehicleEntity vehicle = vehicleRepository.findById(repair.getVehicle().getVehicleId())
                 .orElseThrow(() -> new Exception("Vehículo no encontrado con ID: " + repair.getVehicle().getVehicleId()));
         repair.setVehicle(vehicle);
 
-        // Validación del tipo de reparación
         RepairTypeEntity repairType = repairTypeRepository.findById(repair.getRepairType().getRepairTypeId())
                 .orElseThrow(() -> new Exception("Tipo de reparación no encontrado con ID: " + repair.getRepairType().getRepairTypeId()));
         repair.setRepairType(repairType);
 
-        // Verificación de Fecha y Hora
-        if (repair.getExitDate().isBefore(repair.getEntryDate())) {
-            throw new IllegalArgumentException("La fecha de salida no puede ser anterior a la fecha de entrada.");
+        if (repair.getExitDate().isBefore(repair.getEntryDate()) ||
+                (repair.getExitDate().isEqual(repair.getEntryDate()) && repair.getExitTime().isBefore(repair.getEntryTime()))) {
+            throw new IllegalArgumentException("La fecha y hora de salida no pueden ser anteriores a la fecha y hora de entrada.");
         }
-        if (repair.getExitDate().isEqual(repair.getEntryDate()) && repair.getExitTime().isBefore(repair.getEntryTime())) {
-            throw new IllegalArgumentException("La hora de salida no puede ser anterior a la hora de entrada en el mismo día.");
-        }
-
-        return repairRepository.save(repair);
     }
 
     public List<RepairEntity> findAllRepairs() {
@@ -124,4 +133,46 @@ public class RepairService {
             return delayCharge;
         }
     }
+
+    @Transactional
+    public BigDecimal calculateTotalRepairCost(Long repairId) throws Exception {
+        RepairEntity repair = findRepairById(repairId)
+                .orElseThrow(() -> new Exception("Reparación no encontrada con ID: " + repairId));
+
+        BigDecimal baseRepairCost = repair.getRepairCost(); // Costo base de la reparación
+        BigDecimal totalCharges = BigDecimal.ZERO; // Inicialización de los recargos totales
+        BigDecimal totalDiscounts = BigDecimal.ZERO; // Inicialización de los descuentos totales
+
+        // Calculo de descuentos aplicables
+        BigDecimal dayOfWeekDiscount = calculateDayOfWeekDiscount(repair.getEntryDate(), repair.getEntryTime());
+        BigDecimal discountAmount = baseRepairCost.multiply(dayOfWeekDiscount.divide(new BigDecimal(100)));
+        totalDiscounts = totalDiscounts.add(discountAmount);
+
+        BigDecimal additionalDiscount = discountService.determineDiscountPercentage(repair.getVehicle().getVehicleId(), repair.getVehicle().getEngineType());
+        BigDecimal additionalDiscountAmount = baseRepairCost.multiply(additionalDiscount.divide(new BigDecimal(100)));
+        totalDiscounts = totalDiscounts.add(additionalDiscountAmount);
+
+        // Calculo de recargos aplicables
+        BigDecimal pickupDelayCharge = calculatePickupDelayCharge(repairId);
+        totalCharges = totalCharges.add(pickupDelayCharge);
+
+        BigDecimal mileageChargePercentage = chargeService.determineMileageChargePercentage(repair.getVehicle().getVehicleId());
+        BigDecimal mileageCharge = baseRepairCost.multiply(mileageChargePercentage.divide(new BigDecimal(100)));
+        totalCharges = totalCharges.add(mileageCharge);
+
+        // Calculo de bonos aplicables si corresponde
+        BigDecimal bonusAmount = bonusService.calculateBonusForVehicle(repair.getVehicle().getVehicleId());
+        totalDiscounts = totalDiscounts.add(bonusAmount);
+
+        // Cálculo final
+        BigDecimal totalAfterDiscounts = baseRepairCost.subtract(totalDiscounts);
+        BigDecimal totalAfterCharges = totalAfterDiscounts.add(totalCharges);
+
+        // Suponiendo un IVA del 19%
+        BigDecimal tax = totalAfterCharges.multiply(new BigDecimal("0.19"));
+        BigDecimal totalWithTax = totalAfterCharges.add(tax);
+
+        return totalWithTax;
+    }
+
 }

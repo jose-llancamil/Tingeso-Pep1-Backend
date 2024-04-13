@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Optional;
 
@@ -74,4 +75,13 @@ public class BonusService {
         bonus.setVehicle(vehicle);
         return bonusRepository.save(bonus);
     }
+    public BigDecimal calculateBonusForVehicle(Long vehicleId) {
+        Optional<BonusEntity> bonus = bonusRepository.findByVehicle_VehicleId(vehicleId);
+        if (bonus.isPresent()) {
+            return bonus.get().getAmount(); // Retorna el monto del bono si existe
+        } else {
+            return BigDecimal.ZERO; // Retorna cero si no hay bono aplicado
+        }
+    }
+
 }

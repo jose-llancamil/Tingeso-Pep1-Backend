@@ -24,30 +24,23 @@ public class RepairTypeController {
     public ResponseEntity<RepairTypeEntity> createRepairType(@RequestBody RepairTypeEntity repairType) {
         try {
             RepairTypeEntity savedRepairType = repairTypeService.createOrUpdateRepairType(repairType);
-            return new ResponseEntity<>(savedRepairType, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedRepairType);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         }
     }
 
     @GetMapping
     public ResponseEntity<List<RepairTypeEntity>> getAllRepairTypes() {
         List<RepairTypeEntity> repairTypes = repairTypeService.findAllRepairTypes();
-        if (repairTypes.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
-        }
-        return new ResponseEntity<>(repairTypes, HttpStatus.OK);
+        return repairTypes.isEmpty() ? ResponseEntity.noContent().build() : ResponseEntity.ok(repairTypes);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<RepairTypeEntity> getRepairTypeById(@PathVariable("id") Long id) {
-        try {
-            RepairTypeEntity repairType = repairTypeService.findRepairTypeById(id)
-                    .orElseThrow(() -> new Exception("RepairType not found with ID: " + id));
-            return new ResponseEntity<>(repairType, HttpStatus.OK);
-        } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
-        }
+        return repairTypeService.findRepairTypeById(id)
+                .map(ResponseEntity::ok)
+                .orElseGet(() -> ResponseEntity.notFound().build());
     }
 
     @PutMapping("/{id}")
@@ -55,9 +48,9 @@ public class RepairTypeController {
         try {
             repairType.setRepairTypeId(id);
             RepairTypeEntity updatedRepairType = repairTypeService.createOrUpdateRepairType(repairType);
-            return new ResponseEntity<>(updatedRepairType, HttpStatus.OK);
+            return ResponseEntity.ok(updatedRepairType);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -65,9 +58,9 @@ public class RepairTypeController {
     public ResponseEntity<HttpStatus> deleteRepairType(@PathVariable("id") Long id) {
         try {
             repairTypeService.deleteRepairType(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

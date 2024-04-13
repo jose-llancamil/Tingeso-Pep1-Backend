@@ -106,6 +106,4 @@ public class DiscountService {
 
         return discountPercentage;
     }
-
-
 }

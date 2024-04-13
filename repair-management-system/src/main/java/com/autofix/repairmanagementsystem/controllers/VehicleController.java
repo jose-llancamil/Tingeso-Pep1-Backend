@@ -25,9 +25,9 @@ public class VehicleController {
     public ResponseEntity<VehicleEntity> addVehicle(@RequestBody VehicleEntity vehicle) {
         try {
             VehicleEntity savedVehicle = vehicleService.registerOrUpdateVehicle(vehicle);
-            return new ResponseEntity<>(savedVehicle, HttpStatus.CREATED);
+            return ResponseEntity.status(HttpStatus.CREATED).body(savedVehicle);
         } catch (Exception e) {
-            return new ResponseEntity<>(null, HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().body(null); // Consider returning a more informative error structure.
         }
     }
 
@@ -35,18 +35,18 @@ public class VehicleController {
     public ResponseEntity<List<VehicleEntity>> getAllVehicles() {
         List<VehicleEntity> vehicles = vehicleService.findAllVehicles();
         if (vehicles.isEmpty()) {
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         }
-        return new ResponseEntity<>(vehicles, HttpStatus.OK);
+        return ResponseEntity.ok(vehicles);
     }
 
     @GetMapping("/{id}")
     public ResponseEntity<VehicleEntity> getVehicleById(@PathVariable("id") Long id) {
         try {
             VehicleEntity vehicle = vehicleService.findVehicleById(id);
-            return new ResponseEntity<>(vehicle, HttpStatus.OK);
+            return ResponseEntity.ok(vehicle);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+            return ResponseEntity.notFound().build();
         }
     }
 
@@ -55,9 +55,9 @@ public class VehicleController {
         try {
             vehicle.setVehicleId(id);
             VehicleEntity updatedVehicle = vehicleService.registerOrUpdateVehicle(vehicle);
-            return new ResponseEntity<>(updatedVehicle, HttpStatus.OK);
+            return ResponseEntity.ok(updatedVehicle);
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.BAD_REQUEST);
+            return ResponseEntity.badRequest().build();
         }
     }
 
@@ -65,9 +65,9 @@ public class VehicleController {
     public ResponseEntity<HttpStatus> deleteVehicle(@PathVariable("id") Long id) {
         try {
             vehicleService.deleteVehicle(id);
-            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            return ResponseEntity.noContent().build();
         } catch (Exception e) {
-            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.internalServerError().build();
         }
     }
 }

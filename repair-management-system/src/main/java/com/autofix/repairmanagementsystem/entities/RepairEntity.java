@@ -26,6 +26,9 @@ public class RepairEntity {
     @Column(name = "entry_date", nullable = false)
     private LocalDate entryDate;
 
+    @Column(name = "status")
+    private String status;
+
     @Column(name = "entry_time", nullable = false)
     private LocalTime entryTime;
 
