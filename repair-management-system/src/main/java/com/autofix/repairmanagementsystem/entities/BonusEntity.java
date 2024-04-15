@@ -1,5 +1,7 @@
 package com.autofix.repairmanagementsystem.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +11,7 @@ import java.math.BigDecimal;
 
 @Entity
 @Table(name = "bonuses")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -19,6 +22,7 @@ public class BonusEntity {
 
     @ManyToOne(fetch = FetchType.LAZY, optional = true)
     @JoinColumn(name = "vehicle_id")
+    @JsonBackReference("vehicle-bonus")
     private VehicleEntity vehicle;
 
     @Column(name = "amount", nullable = false, precision = 10, scale = 2)

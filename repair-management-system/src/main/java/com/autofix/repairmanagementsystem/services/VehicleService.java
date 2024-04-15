@@ -22,17 +22,24 @@ public class VehicleService {
 
     @Transactional
     public VehicleEntity registerOrUpdateVehicle(VehicleEntity vehicle) throws Exception {
-        // Validar información del vehículo (ejemplo: unicidad del número de placa)
-        if (vehicle.getVehicleId() != null && vehicleRepository.existsById(vehicle.getVehicleId())) {
-            throw new Exception("El vehículo ya existe con ID: " + vehicle.getVehicleId());
-        }
+        // Validación del año de fabricación
         int currentYear = Year.now().getValue();
         if (vehicle.getManufactureYear() < 1970 || vehicle.getManufactureYear() > currentYear) {
             throw new IllegalArgumentException("El año de fabricación del vehículo está fuera del rango permitido.");
         }
-        Optional<VehicleEntity> existingVehicle = vehicleRepository.findByLicensePlateNumber(vehicle.getLicensePlateNumber());
-        if (existingVehicle.isPresent() && !existingVehicle.get().getVehicleId().equals(vehicle.getVehicleId())) {
-            throw new Exception("El número de placa ya está registrado: " + vehicle.getLicensePlateNumber());
+
+        // Diferenciar entre creación y actualización
+        if (vehicle.getVehicleId() != null) {
+            // Actualización
+            if (!vehicleRepository.existsById(vehicle.getVehicleId())) {
+                throw new Exception("El vehículo con ID " + vehicle.getVehicleId() + " no existe.");
+            }
+        } else {
+            // Creación
+            Optional<VehicleEntity> existingVehicle = vehicleRepository.findByLicensePlateNumber(vehicle.getLicensePlateNumber());
+            if (existingVehicle.isPresent()) {
+                throw new Exception("El número de placa ya está registrado: " + vehicle.getLicensePlateNumber());
+            }
         }
         return vehicleRepository.save(vehicle);
     }

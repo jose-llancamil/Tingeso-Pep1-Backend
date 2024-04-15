@@ -1,5 +1,7 @@
 package com.autofix.repairmanagementsystem.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -9,6 +11,7 @@ import java.util.List;
 
 @Entity
 @Table(name = "vehicles")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -42,8 +45,10 @@ public class VehicleEntity {
     private Integer seatCount;
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("vehicle-repair")
     private List<RepairEntity> repairs;
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference("vehicle-bonus")
     private List<BonusEntity> bonuses;
 }

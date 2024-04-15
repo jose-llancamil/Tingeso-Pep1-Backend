@@ -1,5 +1,7 @@
 package com.autofix.repairmanagementsystem.entities;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -11,6 +13,7 @@ import java.time.LocalTime;
 
 @Entity
 @Table(name = "repairs")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
@@ -21,6 +24,7 @@ public class RepairEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "vehicle_id", nullable = false)
+    @JsonBackReference("vehicle-repair")
     private VehicleEntity vehicle;
 
     @Column(name = "entry_date", nullable = false)
