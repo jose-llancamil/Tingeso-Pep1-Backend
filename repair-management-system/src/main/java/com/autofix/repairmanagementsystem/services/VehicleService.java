@@ -22,20 +22,15 @@ public class VehicleService {
 
     @Transactional
     public VehicleEntity registerOrUpdateVehicle(VehicleEntity vehicle) throws Exception {
-        // Validación del año de fabricación
         int currentYear = Year.now().getValue();
         if (vehicle.getManufactureYear() < 1970 || vehicle.getManufactureYear() > currentYear) {
             throw new IllegalArgumentException("El año de fabricación del vehículo está fuera del rango permitido.");
         }
-
-        // Diferenciar entre creación y actualización
         if (vehicle.getVehicleId() != null) {
-            // Actualización
             if (!vehicleRepository.existsById(vehicle.getVehicleId())) {
                 throw new Exception("El vehículo con ID " + vehicle.getVehicleId() + " no existe.");
             }
         } else {
-            // Creación
             Optional<VehicleEntity> existingVehicle = vehicleRepository.findByLicensePlateNumber(vehicle.getLicensePlateNumber());
             if (existingVehicle.isPresent()) {
                 throw new Exception("El número de placa ya está registrado: " + vehicle.getLicensePlateNumber());
@@ -54,8 +49,6 @@ public class VehicleService {
 
     @Transactional
     public void deleteVehicle(Long vehicleId) throws Exception {
-        // Verificar si hay reparaciones pendientes o historial importante
-        // Si hay reparaciones pendientes, lanzar excepción o manejar según la lógica de negocio
         VehicleEntity vehicle = findVehicleById(vehicleId);
         if (!vehicle.getRepairs().isEmpty()) {
             throw new Exception("El vehículo tiene reparaciones pendientes y no puede ser eliminado.");

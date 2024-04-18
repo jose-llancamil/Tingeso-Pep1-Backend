@@ -64,11 +64,9 @@ public class VehicleControllerTest {
 
     @Test
     void getVehicleById_ShouldReturnNotFound() throws Exception {
-        Exception exception = assertThrows(Exception.class, () -> {
-            when(vehicleService.findVehicleById(1L)).thenThrow(new Exception("Vehículo no encontrado con ID: " + 1L));
-            vehicleController.getVehicleById(1L);
-        });
-        assertThat(exception.getMessage()).isEqualTo("Vehículo no encontrado con ID: 1");
+        when(vehicleService.findVehicleById(1L)).thenThrow(new Exception("Vehículo no encontrado con ID: " + 1L));
+        ResponseEntity<VehicleEntity> response = vehicleController.getVehicleById(1L);
+        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
         verify(vehicleService).findVehicleById(1L);
     }
 
