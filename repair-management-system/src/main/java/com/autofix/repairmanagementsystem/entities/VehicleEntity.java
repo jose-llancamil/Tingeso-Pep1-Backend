@@ -7,6 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -46,9 +47,9 @@ public class VehicleEntity {
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("vehicle-repair")
-    private List<RepairEntity> repairs;
+    private List<RepairEntity> repairs = new ArrayList<>();  // Inicializa como lista vacía
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("vehicle-bonus")
-    private List<BonusEntity> bonuses;
+    private List<BonusEntity> bonuses = new ArrayList<>();  // Inicializa como lista vacía
 }
