@@ -91,6 +91,10 @@ public class RepairService {
         repairRepository.deleteById(repairId);
     }
 
+    public List<RepairEntity> findRepairsByVehicleId(Long vehicleId) {
+        return repairRepository.findByVehicleVehicleId(vehicleId);
+    }
+
     public BigDecimal calculateDayOfWeekDiscount(LocalDate entryDate, LocalTime entryTime) {
         DayOfWeek dayOfWeek = entryDate.getDayOfWeek();
         BigDecimal discountPercentage = BigDecimal.ZERO;
