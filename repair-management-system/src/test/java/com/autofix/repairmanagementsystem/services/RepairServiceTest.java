@@ -20,6 +20,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.assertj.core.api.Assertions.assertThat;
@@ -71,7 +72,6 @@ public class RepairServiceTest {
         when(vehicleRepository.findById(anyLong())).thenReturn(Optional.of(repair.getVehicle()));
         when(repairTypeRepository.findById(anyLong())).thenReturn(Optional.of(repair.getRepairType()));
         when(repairRepository.save(any(RepairEntity.class))).thenReturn(repair);
-
         RepairEntity savedRepair = repairService.registerRepair(repair);
         assertThat(savedRepair).isNotNull();
         verify(repairRepository).save(repair);
@@ -107,9 +107,30 @@ public class RepairServiceTest {
         when(discountService.determineDiscountPercentage(anyLong(), any())).thenReturn(new BigDecimal("5"));
         when(chargeService.determineMileageChargePercentage(anyLong())).thenReturn(new BigDecimal("3"));
         when(bonusService.calculateBonusForVehicle(anyLong())).thenReturn(new BigDecimal("20"));
-
         BigDecimal totalCost = repairService.calculateTotalRepairCost(1L);
         assertThat(totalCost).isNotNull();
-        // Asumiendo que los cálculos internos son correctos, comprobaríamos el resultado exacto esperado
+    }
+
+    @Test
+    void findRepairsByVehicleId_ReturnsRepairsList() {
+        when(repairRepository.findByVehicleVehicleId(1L)).thenReturn(Arrays.asList(repair));
+        List<RepairEntity> foundRepairs = repairService.findRepairsByVehicleId(1L);
+        assertThat(foundRepairs).isNotEmpty();
+        assertThat(foundRepairs).contains(repair);
+    }
+
+    @Test
+    void calculateDayOfWeekDiscount_ReturnsDiscount_OnDiscountDaysAndTimes() {
+        LocalDate discountDate = LocalDate.of(2024, 4, 11);
+        LocalTime discountTime = LocalTime.of(10, 0);
+        BigDecimal discount = repairService.calculateDayOfWeekDiscount(discountDate, discountTime);
+        assertThat(discount).isEqualTo(new BigDecimal("10"));
+    }
+
+    @Test
+    void calculatePickupDelayCharge_CalculatesCharge_WhenDelayed() throws Exception {
+        when(repairRepository.findById(1L)).thenReturn(Optional.of(repair));
+        BigDecimal charge = repairService.calculatePickupDelayCharge(1L);
+        assertNotNull(charge);
     }
 }

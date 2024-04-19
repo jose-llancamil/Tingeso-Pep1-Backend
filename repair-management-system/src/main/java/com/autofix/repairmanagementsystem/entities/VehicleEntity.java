@@ -47,9 +47,9 @@ public class VehicleEntity {
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("vehicle-repair")
-    private List<RepairEntity> repairs = new ArrayList<>();  // Inicializa como lista vacía
+    private List<RepairEntity> repairs = new ArrayList<>();
 
     @OneToMany(mappedBy = "vehicle", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference("vehicle-bonus")
-    private List<BonusEntity> bonuses = new ArrayList<>();  // Inicializa como lista vacía
+    private List<BonusEntity> bonuses = new ArrayList<>();
 }

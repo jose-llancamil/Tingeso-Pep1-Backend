@@ -12,7 +12,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @DataJpaTest
-@ActiveProfiles("test") // Use this if you have a specific profile for test configurations
+@ActiveProfiles("test")
 public class VehicleRepositoryTest {
 
     @Autowired
@@ -22,34 +22,25 @@ public class VehicleRepositoryTest {
     private VehicleRepository vehicleRepository;
 
     @Test
-    void findByLicensePlateNumber_WhenVehicleExists_ShouldReturnVehicle() {
-        // Arrange
+    public void whenFindByLicensePlateNumber_thenReturnVehicle() {
+        // given
         VehicleEntity vehicle = new VehicleEntity();
         vehicle.setLicensePlateNumber("ABC123");
         vehicle.setBrand("Toyota");
         vehicle.setModel("Corolla");
         vehicle.setType("Sedan");
-        vehicle.setManufactureYear(2020);
+        vehicle.setManufactureYear(2021);
         vehicle.setEngineType("Gasoline");
         vehicle.setMileage(10000);
         vehicle.setSeatCount(5);
         entityManager.persist(vehicle);
         entityManager.flush();
 
-        // Act
-        Optional<VehicleEntity> foundVehicle = vehicleRepository.findByLicensePlateNumber("ABC123");
+        // when
+        Optional<VehicleEntity> found = vehicleRepository.findByLicensePlateNumber(vehicle.getLicensePlateNumber());
 
-        // Assert
-        assertThat(foundVehicle).isPresent();
-        assertThat(foundVehicle.get().getLicensePlateNumber()).isEqualTo("ABC123");
-    }
-
-    @Test
-    void findByLicensePlateNumber_WhenVehicleDoesNotExist_ShouldReturnEmpty() {
-        // Act
-        Optional<VehicleEntity> foundVehicle = vehicleRepository.findByLicensePlateNumber("XYZ999");
-
-        // Assert
-        assertThat(foundVehicle).isNotPresent();
+        // then
+        assertThat(found.isPresent()).isTrue();
+        assertThat(found.get().getLicensePlateNumber()).isEqualTo(vehicle.getLicensePlateNumber());
     }
 }

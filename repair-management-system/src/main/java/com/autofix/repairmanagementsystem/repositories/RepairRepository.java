@@ -36,20 +36,20 @@ public interface RepairRepository extends JpaRepository<RepairEntity, Long> {
             "ORDER BY SUM(r.repairCost) DESC")
     List<RepairTypeSummaryDTO> findRepairTypesSummary();
 
-    @Query("SELECT new com.autofix.repairmanagementsystem.dto.AverageRepairTimeDTO(v.brand, AVG(DATEDIFF(r.exitDate, r.entryDate))) " +
+    @Query("SELECT new com.autofix.repairmanagementsystem.dto.AverageRepairTimeDTO(v.brand, AVG(TIMESTAMPDIFF(DAY, r.entryDate, r.exitDate))) " +
             "FROM RepairEntity r JOIN r.vehicle v " +
             "GROUP BY v.brand " +
-            "ORDER BY AVG(DATEDIFF(r.exitDate, r.entryDate)) ASC")
+            "ORDER BY AVG(TIMESTAMPDIFF(DAY, r.entryDate, r.exitDate)) ASC")
     List<AverageRepairTimeDTO> findAverageRepairTimesByBrand();
 
     @Query("SELECT new com.autofix.repairmanagementsystem.dto.RepairTypeMotorSummaryDTO(" +
             "rt.description, v.engineType, COUNT(v), " +
-            "SUM(CASE " +
+            "CAST(SUM(CASE " +
             "WHEN v.engineType = 'Gasoline' THEN rt.baseCostGasoline " +
             "WHEN v.engineType = 'Diesel' THEN rt.baseCostDiesel " +
             "WHEN v.engineType = 'Hybrid' THEN rt.baseCostHybrid " +
             "WHEN v.engineType = 'Electric' THEN rt.baseCostElectric " +
-            "ELSE 0 END)) " +
+            "ELSE 0 END) AS Long)) " +
             "FROM RepairEntity r " +
             "JOIN r.vehicle v " +
             "JOIN r.repairType rt " +
@@ -61,6 +61,4 @@ public interface RepairRepository extends JpaRepository<RepairEntity, Long> {
             "WHEN v.engineType = 'Electric' THEN rt.baseCostElectric " +
             "ELSE 0 END) DESC")
     List<RepairTypeMotorSummaryDTO> findRepairTypesAndEngineSummary();
-
-
 }

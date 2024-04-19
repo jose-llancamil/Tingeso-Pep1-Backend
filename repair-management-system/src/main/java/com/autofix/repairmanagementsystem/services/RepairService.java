@@ -49,7 +49,7 @@ public class RepairService {
         return repairRepository.save(repair);
     }
 
-    private void validateRepair(RepairEntity repair) throws Exception {
+    protected void validateRepair(RepairEntity repair) throws Exception {
         VehicleEntity vehicle = vehicleRepository.findById(repair.getVehicle().getVehicleId())
                 .orElseThrow(() -> new Exception("Vehículo no encontrado con ID: " + repair.getVehicle().getVehicleId()));
         repair.setVehicle(vehicle);
@@ -58,8 +58,7 @@ public class RepairService {
                 .orElseThrow(() -> new Exception("Tipo de reparación no encontrado con ID: " + repair.getRepairType().getRepairTypeId()));
         repair.setRepairType(repairType);
 
-        if (repair.getExitDate().isBefore(repair.getEntryDate()) ||
-                (repair.getExitDate().isEqual(repair.getEntryDate()) && repair.getExitTime().isBefore(repair.getEntryTime()))) {
+        if (repair.getExitDate().isBefore(repair.getEntryDate())) {
             throw new IllegalArgumentException("La fecha y hora de salida no pueden ser anteriores a la fecha y hora de entrada.");
         }
     }
@@ -72,17 +71,6 @@ public class RepairService {
         return repairRepository.findById(repairId);
     }
 
-    // Ejemplo de método para encontrar reparaciones dentro de un rango de fechas
-    public List<RepairEntity> findRepairsByDateRange(LocalDate start, LocalDate end) {
-        return repairRepository.findByEntryDateBetween(start, end);
-    }
-
-    // Método para obtener el costo total de reparaciones para un vehículo específico
-    public Double findTotalRepairCostByVehicleId(Long vehicleId) {
-        return repairRepository.findTotalRepairCostByVehicleId(vehicleId);
-    }
-
-    //
     @Transactional
     public void deleteRepair(Long repairId) throws Exception {
         // Verificar si la reparación existe
@@ -119,18 +107,14 @@ public class RepairService {
         RepairEntity repair = repairRepository.findById(repairId)
                 .orElseThrow(() -> new RuntimeException("Reparación no encontrada con ID: " + repairId));
 
-        LocalDate readyDate = repair.getExitDate(); // Suponiendo que `exitDate` es cuando el vehículo está listo para ser recogido
+        LocalDate readyDate = repair.getExitDate();
         LocalDate pickupDate = repair.getCustomerPickupDate();
-
-        // Calcula el número de días de retraso
         long daysDelayed = ChronoUnit.DAYS.between(readyDate, pickupDate);
 
         if (daysDelayed <= 0) {
-            // No hay retraso
             return BigDecimal.ZERO;
         } else {
-            // Recargo del 5% por cada día de retraso
-            BigDecimal totalRepairCost = repair.getRepairCost(); // Asumiendo que `repairCost` es el costo total de la reparación antes de aplicar cualquier recargo
+            BigDecimal totalRepairCost = repair.getRepairCost();
             BigDecimal dailyDelayChargePercentage = new BigDecimal("0.05"); // 5%
             BigDecimal delayCharge = totalRepairCost.multiply(dailyDelayChargePercentage).multiply(new BigDecimal(daysDelayed));
 
@@ -172,11 +156,10 @@ public class RepairService {
         BigDecimal totalAfterDiscounts = baseRepairCost.subtract(totalDiscounts);
         BigDecimal totalAfterCharges = totalAfterDiscounts.add(totalCharges);
 
-        // Suponiendo un IVA del 19%
+        // IVA del 19%
         BigDecimal tax = totalAfterCharges.multiply(new BigDecimal("0.19"));
         BigDecimal totalWithTax = totalAfterCharges.add(tax);
 
         return totalWithTax;
     }
-
 }
