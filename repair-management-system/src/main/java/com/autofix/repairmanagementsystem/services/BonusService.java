@@ -44,7 +44,6 @@ public class BonusService {
         bonus.setBrand(bonusDetails.getBrand());
         bonus.setAmount(bonusDetails.getAmount());
         bonus.setDescription(bonusDetails.getDescription());
-        // No actualizamos el campo 'vehicle' aquí ya que la asignación se maneja a través de applyBonusToVehicle()
         return bonusRepository.save(bonus);
     }
 

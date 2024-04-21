@@ -15,4 +15,3 @@ public class RepairCostReportDTO {
     private BigDecimal totalCost;
     private int numberOfRepairs;
 }
-

@@ -2,7 +2,6 @@ package com.autofix.repairmanagementsystem.controllers;
 
 import com.autofix.repairmanagementsystem.dto.AverageRepairTimeDTO;
 import com.autofix.repairmanagementsystem.dto.RepairCostReportDTO;
-import com.autofix.repairmanagementsystem.dto.RepairTypeMotorSummaryDTO;
 import com.autofix.repairmanagementsystem.dto.RepairTypeSummaryDTO;
 import com.autofix.repairmanagementsystem.services.ReportService;
 import org.junit.jupiter.api.BeforeEach;

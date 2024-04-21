@@ -16,7 +16,7 @@ import java.time.LocalTime;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 @DataJpaTest
-@ActiveProfiles("test") // Utiliza el perfil de configuración "test" si es necesario
+@ActiveProfiles("test")
 public class RepairTypeRepositoryTest {
 
     @Autowired
@@ -63,7 +63,6 @@ public class RepairTypeRepositoryTest {
         testEntityManager.persist(repair);
         testEntityManager.flush();
 
-        // Realizar alguna prueba o validación aquí
         long repairCount = repairTypeRepository.countByRepairTypeId(repairType.getRepairTypeId());
         assertEquals(1, repairCount);
     }
