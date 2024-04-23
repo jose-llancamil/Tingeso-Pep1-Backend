@@ -11,6 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/v1/repair-types")
+@CrossOrigin("*")
 public class RepairTypeController {
 
     private final RepairTypeService repairTypeService;

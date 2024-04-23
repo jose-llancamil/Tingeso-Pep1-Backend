@@ -43,15 +43,15 @@ public class RepairEntity {
     @Column(name = "repair_cost", nullable = false)
     private BigDecimal repairCost;
 
-    @Column(name = "exit_date", nullable = false)
+    @Column(name = "exit_date", nullable = true)
     private LocalDate exitDate;
 
-    @Column(name = "exit_time", nullable = false)
+    @Column(name = "exit_time", nullable = true)
     private LocalTime exitTime;
 
-    @Column(name = "customer_pickup_date", nullable = false)
+    @Column(name = "customer_pickup_date", nullable = true)
     private LocalDate customerPickupDate;
 
-    @Column(name = "customer_pickup_time", nullable = false)
+    @Column(name = "customer_pickup_time", nullable = true)
     private LocalTime customerPickupTime;
 }
