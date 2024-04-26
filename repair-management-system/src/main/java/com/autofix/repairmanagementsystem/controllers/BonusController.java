@@ -2,7 +2,10 @@ package com.autofix.repairmanagementsystem.controllers;
 
 import com.autofix.repairmanagementsystem.entities.BonusEntity;
 import com.autofix.repairmanagementsystem.services.BonusService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +17,8 @@ import java.util.List;
 public class BonusController {
 
     private final BonusService bonusService;
+
+    private static final Logger logger = LoggerFactory.getLogger(VehicleController.class);
 
     @Autowired
     public BonusController(BonusService bonusService) {
@@ -44,12 +49,16 @@ public class BonusController {
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<BonusEntity> updateBonus(@PathVariable Long id, @RequestBody BonusEntity bonus) {
+    public ResponseEntity<?> updateBonus(@PathVariable Long id, @RequestBody BonusEntity bonus) {
         try {
             BonusEntity updatedBonus = bonusService.updateBonus(id, bonus);
             return ResponseEntity.ok(updatedBonus);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(e.getMessage());
         } catch (Exception e) {
-            return ResponseEntity.badRequest().build();
+            // Log the exception details to help with debugging
+            logger.error("Error updating bonus with ID " + id, e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error updating bonus: " + e.getMessage());
         }
     }
 

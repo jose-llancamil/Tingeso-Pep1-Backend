@@ -42,10 +42,13 @@ public class BonusService {
         BonusEntity bonus = bonusRepository.findById(id)
                 .orElseThrow(() -> new IllegalArgumentException("Bonus no encontrado con el ID: " + id));
         bonus.setBrand(bonusDetails.getBrand());
-        bonus.setAmount(bonusDetails.getAmount());
         bonus.setDescription(bonusDetails.getDescription());
+        if (bonusDetails.getAmount() != null) {
+            bonus.setAmount(bonusDetails.getAmount());
+        }
         return bonusRepository.save(bonus);
     }
+
 
     @Transactional
     public void deleteBonus(Long id) {

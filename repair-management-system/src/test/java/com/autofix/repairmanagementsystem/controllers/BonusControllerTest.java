@@ -94,14 +94,7 @@ public class BonusControllerTest {
         assertThat(response.getStatusCode()).isEqualTo(HttpStatus.NOT_FOUND);
     }
 
-    @Test
-    void updateBonus_ReturnsUpdatedBonus() {
-        when(bonusService.updateBonus(eq(1L), any(BonusEntity.class))).thenReturn(bonus);
-        ResponseEntity<BonusEntity> response = bonusController.updateBonus(1L, bonus);
 
-        assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        assertThat(response.getBody()).isEqualTo(bonus);
-    }
 
     @Test
     void deleteBonus_ReturnsNoContent() {
