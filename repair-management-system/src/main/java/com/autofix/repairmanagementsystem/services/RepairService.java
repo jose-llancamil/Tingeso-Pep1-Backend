@@ -160,6 +160,11 @@ public class RepairService {
         BigDecimal tax = totalAfterCharges.multiply(new BigDecimal("0.19"));
         BigDecimal totalWithTax = totalAfterCharges.add(tax);
 
+        // Verificación si el total con impuestos es negativo
+        if (totalWithTax.compareTo(BigDecimal.ZERO) < 0) {
+            return BigDecimal.ZERO;
+        }
+
         return totalWithTax;
     }
 }
